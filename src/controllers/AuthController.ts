@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import * as Yup from 'yup';
 
 import { UserRepository } from '../repositories/UserRepository';
+import { AddressRepository } from '../repositories/AddressRepository';
+
 
 class AuthController {
   async create(request: Request, response: Response) {
@@ -11,9 +13,18 @@ class AuthController {
       const data = request.body;
 
       const schema = Yup.object().shape({
-        full_name: Yup.string().required('Full is required'),
-        email: Yup.string().email('Email is not valid').required('Email is required'),
-        password: Yup.string().required('Password is required'),
+        full_name: Yup.string().required(),
+        email: Yup.string().email('Email is not valid').required(),
+        password: Yup.string().required(),
+        address: Yup.object().shape({
+          street: Yup.string().required(),
+          number: Yup.string().required(),
+          complement: Yup.string().nullable(),
+          neighborhood: Yup.string().required(),
+          city: Yup.string().required(),
+          state: Yup.string().required(),
+          zip_code: Yup.string().length(8).required(),
+        }),
       });
 
       await schema.validate(data, { abortEarly: false });
@@ -28,8 +39,13 @@ class AuthController {
       
       data.password = await bcrypt.hash(data.password, 10);
 
-      await UserRepository.save({
+      const newUser = await UserRepository.save({
         ...data,
+      });
+
+      await AddressRepository.save({
+        ...data.address,
+        user_id: newUser.id
       });
 
       return response.sendStatus(201);

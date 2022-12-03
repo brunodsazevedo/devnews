@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm"
 
-export class addresses1670002349534 implements MigrationInterface {
+export class favoriteThemes1670029818939 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(new Table({
-      name: 'addresses',
+      name: 'favorite_themes',
       columns: [
         {
           name: 'id',
@@ -19,40 +19,14 @@ export class addresses1670002349534 implements MigrationInterface {
           type: 'uuid',
         },
         {
-          name: 'street',
+          name: 'theme',
           type: 'varchar',
-        },
-        {
-          name: 'number',
-          type: 'varchar',
-        },
-        {
-          name: 'complement',
-          type: 'varchar',
-        },
-        {
-          name: 'neighborhood',
-          type: 'varchar',
-        },
-        {
-          name: 'city',
-          type: 'varchar',
-        },
-        {
-          name: 'state',
-          type: 'varchar',
-          length: '2',
-        },
-        {
-          name: 'zip_code',
-          type: 'varchar',
-          length: '8',
         },
       ],
 
       foreignKeys: [
         {
-          name: 'UserAddress',
+          name: 'FavoriteThemesUser',
           columnNames: ['user_id'],
           referencedTableName: 'users',
           referencedColumnNames: ['id'],
@@ -64,7 +38,7 @@ export class addresses1670002349534 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('addresses', true);
+    await queryRunner.dropTable('favorite_themes', true);
   }
 
 }

@@ -1,4 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, AfterInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+
+import { FavoriteTheme } from './FavoriteTheme';
+import { Address } from './Address';
 
 @Entity({
   name: 'users'
@@ -18,4 +21,18 @@ export class User {
 
   @Column({ default: 'CURRENT_TIMESTAMP' })
   created_at: string;
+
+  @OneToMany(() => FavoriteTheme, (favoriteTheme) => favoriteTheme.user)
+  @JoinColumn({
+    name: 'id',
+    referencedColumnName: 'user_id',
+  })
+  favoriteThemes: FavoriteTheme[];
+
+  @OneToOne(() => Address)
+  @JoinColumn({
+    name: 'id',
+    referencedColumnName: 'user_id',
+  })
+  user: User;
 }
