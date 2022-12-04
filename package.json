@@ -1,8 +1,8 @@
 {
-  "name": "devnews",
+  "name": "devnews-api",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:brunodsazevedo/devnews-backend.git",
+  "repository": "git@github.com:brunodsazevedo/devnews-api.git",
   "author": "brunodsazevedo <bruno.ds.azevedo@gmail.com>",
   "license": "MIT",
   "scripts": {
