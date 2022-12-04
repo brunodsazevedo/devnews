@@ -40,7 +40,9 @@ class NewsController {
         }
       });
 
-      return response.status(200).send(news.data);
+      const data = news.data && news.data.articles.length > 0 ? news.data.articles : [];
+
+      return response.status(200).send(data);
     } catch (error) {
       console.error(error);
       return response.status(500).send({ message: 'internal error server' });
@@ -70,7 +72,9 @@ class NewsController {
         }
       });
 
-      return response.status(200).send(news.data);
+      const data = news.data && news.data.articles.length > 0 ? news.data.articles : [];
+
+      return response.status(200).json(data);
     } catch (error) {
       console.error(error);
       return response.status(500).send({ message: 'internal error server' });

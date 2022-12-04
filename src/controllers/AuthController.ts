@@ -6,7 +6,6 @@ import * as Yup from 'yup';
 import { UserRepository } from '../repositories/UserRepository';
 import { AddressRepository } from '../repositories/AddressRepository';
 
-
 class AuthController {
   async create(request: Request, response: Response) {
     try {

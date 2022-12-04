@@ -1,0 +1,492 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DevNews API",
+    "description": "A DevNews Api é uma aplicação que possui integração com o serviço News API (https://newsapi.org), e nossa API tem o intuito de trazer notícias do mundo inteiro focado em seus assuntos preferidos em tecnologia. Você poderá ver as principais noticias em destaque, e poderá ver noticias que são de seu interesse, como noticias sobre Machine Learning, novidades de novas featuares da linguagem NodeJS, entre outros assuntos.",
+    "version": "1.0.0"
+  },
+
+  "servers": [
+    {
+      "url": "http://localhost:3333",
+      "description": "Local"
+    },
+    {
+      "url": "https://devnews.dotazevedo.com.br",
+      "description": "Production"
+    }
+  ],
+
+  "paths": {
+
+    "/sign-up": {
+      "post": {
+        "summary": "Cadastro de um novo usuário",
+        "description": "Essa rota tem o intuito de criar credenciais dentro da aplicação.",
+        "tags": [
+          "Autenticação"
+        ],
+
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPostDataDTO"
+              },
+              "example": {
+                "full_name": "Nome completo",
+                "email": "seu@email.com",
+                "password": "minha senha super segura",
+                "address": {
+                  "street": "Av. Paulista",
+                  "number": "1001",
+                  "complement": "Bloco A Apt 25",
+                  "neighborhood": "Bela Vista",
+                  "city": "São Paulo",
+                  "state": "SP",
+                  "zip_code": "01311200"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+
+        "responses": {
+          "201": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+
+    "/sign-in": {
+      "post": {
+        "summary": "Login de usuário na aplicação",
+        "description": "Essa rota solicita credenciais de cliente para autenticar usuário a utilizar demais rotas da aplicação um um Bearer Token.",
+        "tags": [
+          "Autenticação"
+        ],
+
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "email": "seu@email.com",
+                "password": "minha senha super"
+              }
+            }
+          },
+          "required": true
+        },
+
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/SignInResponseDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+
+    "/favorite-themes": {
+      "get": {
+        "summary": "Lista todos os temas de notícias a serem pesquisadas",
+        "description": "Essa rota listará todos os temas favoritos que o usuário quer ter de notícias, a partir dessas palavras-chaves para personalizar a experiência do usuário.",
+        "tags": [
+          "Temas Favoritos"
+        ],
+
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FavoriteThemesDTO"
+                  }
+                }
+              }
+            }
+          },
+
+          "401": {
+            "description": "Unauthorized"
+          },
+
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+
+      "post": {
+        "summary": "Grava temas favoritos para pesquisa de notícias",
+        "description": "Essa rota registrará temas e palavras-chaves de notícias que será utilizada para filtrar notícias conforme registros de temas.",
+        "tags": [
+          "Temas Favoritos"
+        ],
+
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "theme": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "theme": "Machine Learning"
+              }
+            }
+          },
+          "required": true
+        },
+
+        "responses": {
+          "201": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+
+    "/favorite-themes{favoriteThemeId}": {
+      "delete": {
+        "summary": "Exclui tema preferido criado.",
+        "description": "Essa rota irá tratar de deletar registro permanentemente dos registros do usuário o tema criado",
+        "tags": [
+          "Temas Favoritos"
+        ],
+
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+
+        "parameters": [
+          {
+            "name": "favoriteThemeId",
+            "in": "path",
+            "description": "ID de tema a ser excluído",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+
+          "401": {
+            "description": "Unauthorized"
+          },
+
+          "404": {
+            "description": "Not Found"
+          },
+
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+
+    "/news/top-news": {
+      "get": {
+        "summary": "Lista resumo de notícias relevantes",
+        "description": "Rota de API em trazer noticias de destaque, de acordo com a configuração de temas gravados pelo usuário.",
+        "tags": [
+          "Notícias"
+        ],
+
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NewsDTO"
+                  }
+                }
+              }
+            }
+          },
+
+          "401": {
+            "description": "Unauthorized"
+          },
+
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+
+    "/news/news-by-theme/{favoriteThemeId}": {
+      "get": {
+        "summary": "Lista resumo de notícias relevantes",
+        "description": "Rota de API em trazer noticias de destaque, de acordo com a configuração de temas gravados pelo usuário.",
+        "tags": [
+          "Notícias"
+        ],
+
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+
+        "parameters": [
+          {
+            "name": "favoriteThemeId",
+            "in": "path",
+            "description": "ID de tema favorito",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NewsDTO"
+                  }
+                }
+              }
+            }
+          },
+
+          "401": {
+            "description": "Unauthorized"
+          },
+
+          "404": {
+            "description": "Not Found"
+          },
+
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    
+    "schemas": {
+      "NewsDTO": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "author": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "urlToImage": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      },
+
+      "SignInResponseDTO": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserDTO"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+
+      "UserDTO": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+
+      "UserPostDataDTO": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "address": {
+            "items": {
+              "$ref": "#/components/schemas/AddressPostDataDTO"
+            }
+          }
+        }
+      },
+
+      "AddressPostDataDTO": {
+        "type": "object",
+        "properties": {
+          "street": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          },
+          "complement": {
+            "type": "string"
+          },
+          "neighborhood": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "zip_code": {
+            "type": "string"
+          }
+        }
+      },
+
+      "FavoriteThemesDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "theme": {
+            "type": "string"
+          }
+        }
+      }
+    },
+
+    "securitySchemes": {
+      "api_key": {
+        "description": "Faça autenticação em /sign-in e insira o item bearer token nas requisições da aplicação.",
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
